@@ -5,8 +5,12 @@
     </div>
     <nav class="flex items-center space-x-4">
       <span class="hidden sm:inline">Véhicule de service</span>
-      <button class="btn border-0 px-4 py-2 rounded" style="background-color: #2857BA; color: #16CD78;">Se connecter</button>
+      @if (!username) {
+        <button class="btn border-0 px-4 py-2 rounded" style="background-color: #2857BA; color: #16CD78;" (click)="goToAuth()">Se connecter</button>
+      } @else {
+        <span class="text-[#16CD78] font-bold">{{ username }}</span>
+        <button class="btn btn-outline btn-error ml-2" (click)="logout()">Se déconnecter</button>
+      }
     </nav>
   </div>
 </header>
-
