@@ -11,7 +11,9 @@ import { Subscription } from 'rxjs';
 })
 export class Header implements OnInit, OnDestroy {
   username: string | null = null;
+  role: string | null = null;
   private sub: Subscription | undefined;
+  private subRole: Subscription | undefined;
 
   constructor(private router: Router, private authService: AuthService) {}
 
@@ -19,10 +21,14 @@ export class Header implements OnInit, OnDestroy {
     this.sub = this.authService.username$.subscribe(username => {
       this.username = username;
     });
+    this.subRole = this.authService.role$.subscribe(role => {
+      this.role = role;
+    });
   }
 
   ngOnDestroy() {
     this.sub?.unsubscribe();
+    this.subRole?.unsubscribe();
   }
 
   goToAuth() {

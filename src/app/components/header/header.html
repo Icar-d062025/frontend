@@ -8,7 +8,7 @@
       @if (!username) {
         <button class="btn border-0 px-4 py-2 rounded" style="background-color: #2857BA; color: #16CD78;" (click)="goToAuth()">Se connecter</button>
       } @else {
-        <span class="text-[#16CD78] font-bold">{{ username }}</span>
+        <span class="text-[#16CD78] font-bold">{{ username }} <span class="text-xs text-white">({{ role }})</span></span>
         <button class="btn btn-outline btn-error ml-2" (click)="logout()">Se déconnecter</button>
       }
     </nav>
