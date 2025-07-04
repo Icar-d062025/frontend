@@ -1,0 +1,63 @@
+/* Styles personnalisés pour la page de profil utilisateur */
+
+.avatar.placeholder .bg-neutral {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+}
+
+.card {
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.form-control input:focus,
+.form-control textarea:focus,
+.form-control select:focus {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.toggle:checked {
+  background-color: #3b82f6;
+  border-color: #3b82f6;
+}
+
+.divider {
+  margin: 2rem 0;
+  font-weight: 600;
+  color: #374151;
+}
+
+/* Animation pour les alertes */
+.alert {
+  animation: slideInDown 0.3s ease-out;
+}
+
+@keyframes slideInDown {
+  from {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive améliorations */
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .card-body {
+    padding: 1.5rem;
+  }
+}

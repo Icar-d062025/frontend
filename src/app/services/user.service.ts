@@ -98,6 +98,26 @@ export class UserService {
     );
   }
 
+  // Méthode pour que l'utilisateur mette à jour son propre profil
+  updateCurrentUserProfile(profileData: Partial<User>): Observable<User> {
+    console.log('Updating current user profile - User token included');
+
+    return this.http.put<User>(
+      `${this.apiUrl}/profile`, // Endpoint spécifique pour le profil utilisateur
+      profileData,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  // Méthode pour récupérer le profil de l'utilisateur connecté
+  getCurrentUserProfile(): Observable<User> {
+    console.log('Fetching current user profile');
+    return this.http.get<User>(
+      `${this.apiUrl}/profile`,
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
   private convertDaysToLocalTime(days: number): string {
     // Option 1: Convertir jours en heures (7 jours = 168 heures)
     // return `${days * 24}:00:00`;

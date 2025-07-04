@@ -8,4 +8,7 @@ export interface User {
   banni?: boolean | null;
   banReason?: string;
   banDuration?: number;
+  adresse?: string;
+  vehiculePerso?: boolean;
+  vehiculeId?: number; // Changé de number | null vers number | undefined
 }
