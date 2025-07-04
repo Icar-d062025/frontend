@@ -10,5 +10,10 @@ export const routes: Routes = [
     path: 'admin',
     loadComponent: () => import('./components/admin/admin').then(m => m.Admin),
     canActivate: [AuthGuard]
+  },
+  {
+    path: 'profile',
+    loadComponent: () => import('./components/user/user').then(m => m.UserComponent),
+    canActivate: [AuthGuard]
   }
 ];

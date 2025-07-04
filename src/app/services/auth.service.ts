@@ -5,6 +5,7 @@ import { jwtDecode } from 'jwt-decode';
 interface JwtPayload {
   sub: string;
   role: string;
+  userId: number; // Ajout du champ userId qui existe dans le token
   // ... autres champs si besoin
 }
 
@@ -16,6 +17,9 @@ export class AuthService {
   private roleSubject = new BehaviorSubject<string | null>(null);
   role$ = this.roleSubject.asObservable();
 
+  private userIdSubject = new BehaviorSubject<number | null>(null);
+  userId$ = this.userIdSubject.asObservable();
+
   constructor() {
     const token = localStorage.getItem('token');
     const username = localStorage.getItem('username');
@@ -25,6 +29,7 @@ export class AuthService {
       // Ensure subjects are initialized to null if no auth data is found
       this.usernameSubject.next(null);
       this.roleSubject.next(null);
+      this.userIdSubject.next(null);
     }
   }
 
@@ -34,6 +39,12 @@ export class AuthService {
     this.usernameSubject.next(username);
     try {
       const decoded = jwtDecode(token) as JwtPayload & { authorities?: string[] };
+
+      // Récupérer l'ID utilisateur depuis le champ 'userId' (pas 'sub')
+      const userId = decoded.userId || null;
+      this.userIdSubject.next(userId);
+      console.log('DEBUG USER ID:', userId); // Debug pour vérifier
+
       console.log('authorities:', decoded.authorities); // DEBUG
       let role = null;
       if (decoded && Array.isArray(decoded.authorities)) {
@@ -90,11 +101,16 @@ export class AuthService {
     return this.roleSubject.value;
   }
 
+  getUserId(): number | null {
+    return this.userIdSubject.value;
+  }
+
   logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('username');
     localStorage.removeItem('role');
     this.usernameSubject.next(null);
     this.roleSubject.next(null);
+    this.userIdSubject.next(null);
   }
 }

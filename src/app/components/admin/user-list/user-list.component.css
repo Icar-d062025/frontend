@@ -1,0 +1,27 @@
+/* Styles personnalisés pour le composant user-list */
+
+/* Animation pour les transitions */
+.hover-scale {
+  transition: transform 0.2s ease-in-out;
+}
+
+.hover-scale:hover {
+  transform: scale(1.02);
+}
+
+/* Amélioration des tooltips */
+[title]:hover {
+  position: relative;
+}
+
+/* Animation du spinner personnalisée si nécessaire */
+@keyframes custom-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Les styles de badges sont gérés directement dans le template HTML avec les classes DaisyUI */
