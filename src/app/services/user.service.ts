@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
+import { switchMap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -50,6 +51,50 @@ export class UserService {
       `${this.apiUrl}/${id}/unban`,
       {},
       { headers: this.getAuthHeaders() }
+    );
+  }
+
+  updateUserName(id: number, firstName: string, lastName: string): Observable<User> {
+    console.log(`Updating user ${id} name - Admin token included`);
+
+    // D'abord récupérer l'utilisateur existant pour garder l'email
+    return this.getUser(id).pipe(
+      switchMap(existingUser => {
+        const updateData = {
+          email: existingUser.email,  // Garder l'email existant
+          prenom: firstName,
+          nom: lastName,
+          role: existingUser.role,    // Garder le rôle existant
+          username: existingUser.username // Garder le username existant
+        };
+        return this.http.put<User>(
+          `${this.apiUrl}/${id}`,
+          updateData,
+          { headers: this.getAuthHeaders() }
+        );
+      })
+    );
+  }
+
+  updateUserRole(id: number, role: string): Observable<User> {
+    console.log(`Updating user ${id} role to ${role} - Admin token included`);
+
+    // D'abord récupérer l'utilisateur existant pour garder l'email
+    return this.getUser(id).pipe(
+      switchMap(existingUser => {
+        const updateData = {
+          email: existingUser.email,     // Garder l'email existant
+          prenom: existingUser.prenom,   // Garder le prénom existant (corrigé)
+          nom: existingUser.nom,         // Garder le nom existant (corrigé)
+          role: role,                    // Nouveau rôle
+          username: existingUser.username // Garder le username existant
+        };
+        return this.http.put<User>(
+          `${this.apiUrl}/${id}`,
+          updateData,
+          { headers: this.getAuthHeaders() }
+        );
+      })
     );
   }
 

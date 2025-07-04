@@ -22,6 +22,9 @@ export class UserListComponent implements OnInit {
   banReason = '';
   banDuration = 7;
 
+  // Pour l'édition en ligne
+  editingUser: { [key: number]: { field: string, value: string } } = {};
+
   constructor(private userService: UserService) {}
 
   ngOnInit() {
@@ -93,18 +96,101 @@ export class UserListComponent implements OnInit {
     }
   }
 
-  getUserRoleBadgeClass(role: string = 'user'): string {
-    switch (role.toLowerCase()) {
-      case 'admin':
+  updateUserRole(user: User, role: string) {
+    if (!role || (role !== 'USER' && role !== 'ADMIN')) {
+      this.error = 'Le rôle doit être "USER" ou "ADMIN"';
+      return;
+    }
+
+    this.userService.updateUserRole(user.id, role).subscribe({
+      next: (updatedUser) => {
+        console.log('User role updated successfully');
+        // Mettre à jour l'utilisateur dans la liste
+        const index = this.users.findIndex(u => u.id === user.id);
+        if (index !== -1) {
+          this.users[index] = { ...this.users[index], role: updatedUser.role };
+        }
+        this.stopEditing(user.id);
+      },
+      error: (error) => {
+        console.error('Error updating user role:', error);
+        this.error = 'Erreur lors de la mise à jour du rôle';
+        this.stopEditing(user.id);
+      }
+    });
+  }
+
+  dismissError() {
+    this.error = null;
+  }
+
+  getUserRoleBadgeClass(role: string = 'USER'): string {
+    switch (role.toUpperCase()) {
+      case 'ADMIN':
         return 'badge-error';
-      case 'moderator':
+      case 'MODERATOR':
         return 'badge-warning';
       default:
         return 'badge-neutral';
     }
   }
 
-  dismissError() {
-    this.error = null;
+  updateUserName(user: User, firstName: string, lastName: string) {
+    if (!firstName.trim() && !lastName.trim()) {
+      this.error = 'Le prénom et le nom ne peuvent pas être vides';
+      return;
+    }
+
+    this.userService.updateUserName(user.id, firstName.trim(), lastName.trim()).subscribe({
+      next: (updatedUser) => {
+        console.log('User name updated successfully');
+        // Mettre à jour l'utilisateur dans la liste
+        const index = this.users.findIndex(u => u.id === user.id);
+        if (index !== -1) {
+          this.users[index] = { ...this.users[index], prenom: updatedUser.prenom, nom: updatedUser.nom };
+        }
+        this.stopEditing(user.id);
+      },
+      error: (error) => {
+        console.error('Error updating user name:', error);
+        this.error = 'Erreur lors de la mise à jour du nom';
+        this.stopEditing(user.id);
+      }
+    });
+  }
+
+  startEditing(userId: number, field: string, currentValue: string) {
+    this.editingUser[userId] = { field, value: currentValue };
+  }
+
+  stopEditing(userId: number) {
+    delete this.editingUser[userId];
+  }
+
+  isEditing(userId: number, field: string): boolean {
+    return this.editingUser[userId]?.field === field;
+  }
+
+  onEditSubmit(user: User, field: string) {
+    const editData = this.editingUser[user.id];
+    if (!editData || editData.field !== field) return;
+
+    if (field === 'fullName') {
+      // Séparer le nom complet en prénom et nom
+      const names = editData.value.split(' ');
+      const firstName = names[0] || '';
+      const lastName = names.slice(1).join(' ') || '';
+      this.updateUserName(user, firstName, lastName);
+    } else if (field === 'role') {
+      this.updateUserRole(user, editData.value);
+    }
+  }
+
+  onEditCancel(userId: number) {
+    this.stopEditing(userId);
+  }
+
+  getFullName(user: User): string {
+    return `${user.prenom || ''} ${user.nom || ''}`.trim() || 'N/A';
   }
 }
