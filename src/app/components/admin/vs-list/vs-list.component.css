@@ -1,0 +1,38 @@
+table {
+  width: 100%;
+  border-collapse: collapse;
+  color: white;
+}
+
+thead {
+  background-color: #2a2a2a;
+}
+
+th, td {
+  padding: 12px 15px;
+  text-align: left;
+  border-bottom: 1px solid #333;
+}
+
+img {
+  max-width: 100px;
+  height: auto;
+  border-radius: 5px;
+}
+
+.actions button {
+  margin-right: 5px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  color: white;
+}
+
+.edit {
+  background-color: #3f51b5;
+}
+
+.delete {
+  background-color: #f44336;
+}

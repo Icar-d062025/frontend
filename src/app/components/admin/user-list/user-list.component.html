@@ -1,0 +1,268 @@
+<div class="p-6 bg-base-100 rounded-lg shadow-xl">
+  <!-- Header -->
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+    <h3 class="text-2xl font-bold text-base-content">Gestion des utilisateurs</h3>
+    <button class="btn btn-primary" (click)="loadUsers()">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+      </svg>
+      Actualiser
+    </button>
+  </div>
+
+  <!-- Message d'erreur -->
+  @if (error) {
+    <div class="alert alert-error mb-6">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+      </svg>
+      <span>{{ error }}</span>
+      <button class="btn btn-sm btn-ghost" (click)="dismissError()">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+  }
+
+  <!-- Indicateur de chargement -->
+  @if (loading) {
+    <div class="flex flex-col items-center justify-center py-16">
+      <span class="loading loading-spinner loading-lg text-primary"></span>
+      <p class="mt-4 text-base-content/70">Chargement des utilisateurs...</p>
+    </div>
+  }
+
+  <!-- Liste des utilisateurs -->
+  @if (!loading) {
+    <div class="overflow-x-auto">
+      <table class="table table-zebra w-full">
+        <thead>
+          <tr>
+            <th class="text-base-content font-semibold">ID</th>
+            <th class="text-base-content font-semibold">Utilisateur</th>
+            <th class="text-base-content font-semibold">Email</th>
+            <th class="text-base-content font-semibold">Nom complet</th>
+            <th class="text-base-content font-semibold">Rôle</th>
+            <th class="text-base-content font-semibold">Statut</th>
+            <th class="text-base-content font-semibold">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (user of users; track user.id) {
+            <tr class="hover">
+              <td class="font-mono text-sm">{{ user.id }}</td>
+              <td>
+                <div class="flex items-center gap-3">
+                  <div class="avatar placeholder">
+                    <div class="bg-neutral text-neutral-content rounded-full w-12">
+                      <span class="text-lg">{{ user.username.charAt(0).toUpperCase() }}</span>
+                    </div>
+                  </div>
+                  <div>
+                    <div class="font-bold text-base-content">{{ user.username }}</div>
+                  </div>
+                </div>
+              </td>
+              <td class="text-base-content/80">{{ user.email || 'N/A' }}</td>
+              <td class="text-base-content/80">
+                @if (isEditing(user.id, 'fullName')) {
+                  <div class="flex gap-2 items-center">
+                    <input
+                      type="text"
+                      class="input input-sm input-bordered flex-1"
+                      [(ngModel)]="editingUser[user.id].value"
+                      (keyup.enter)="onEditSubmit(user, 'fullName')"
+                      (keyup.escape)="onEditCancel(user.id)"
+                      #nameInput>
+                    <button
+                      class="btn btn-success btn-xs"
+                      (click)="onEditSubmit(user, 'fullName')">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    </button>
+                    <button
+                      class="btn btn-error btn-xs"
+                      (click)="onEditCancel(user.id)">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                      </svg>
+                    </button>
+                  </div>
+                } @else {
+                  <span
+                    class="cursor-pointer hover:bg-base-200 px-2 py-1 rounded transition-colors"
+                    (dblclick)="startEditing(user.id, 'fullName', getFullName(user))"
+                    title="Double-cliquez pour modifier">
+                    {{ getFullName(user) }}
+                  </span>
+                }
+              </td>
+              <td>
+                @if (isEditing(user.id, 'role')) {
+                  <div class="flex gap-2 items-center">
+                    <select
+                      class="select select-sm select-bordered"
+                      [(ngModel)]="editingUser[user.id].value"
+                      (keyup.enter)="onEditSubmit(user, 'role')"
+                      (keyup.escape)="onEditCancel(user.id)">
+                      <option value="USER">USER</option>
+                      <option value="ADMIN">ADMIN</option>
+                    </select>
+                    <button
+                      class="btn btn-success btn-xs"
+                      (click)="onEditSubmit(user, 'role')">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                      </svg>
+                    </button>
+                    <button
+                      class="btn btn-error btn-xs"
+                      (click)="onEditCancel(user.id)">
+                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                      </svg>
+                    </button>
+                  </div>
+                } @else {
+                  <div
+                    class="badge badge-sm cursor-pointer hover:brightness-110 transition-all"
+                    [class]="getUserRoleBadgeClass(user.role)"
+                    (dblclick)="startEditing(user.id, 'role', user.role || 'USER')"
+                    title="Double-cliquez pour modifier">
+                    {{ user.role || 'USER' }}
+                  </div>
+                }
+              </td>
+              <td>
+                @if (user.banni) {
+                  <div class="flex flex-col gap-1">
+                    <div class="badge badge-error badge-sm">Banni</div>
+                    @if (user.banReason) {
+                      <div class="text-xs text-base-content/60 max-w-32 truncate"
+                           [title]="user.banReason">
+                        {{ user.banReason }}
+                      </div>
+                    }
+                    @if (user.banDuration) {
+                      <div class="text-xs text-base-content/60">
+                        {{ user.banDuration }} jours
+                      </div>
+                    }
+                  </div>
+                } @else {
+                  <div class="badge badge-success badge-sm">Actif</div>
+                }
+              </td>
+              <td>
+                <div class="flex gap-2">
+                  @if (!user.banni) {
+                    <button
+                      class="btn btn-warning btn-sm"
+                      (click)="openBanModal(user)">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
+                      </svg>
+                      Bannir
+                    </button>
+                  } @else {
+                    <button
+                      class="btn btn-success btn-sm"
+                      (click)="unbanUser(user)">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                      Débannir
+                    </button>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+
+      <!-- Message si aucun utilisateur -->
+      @if (users.length === 0) {
+        <div class="text-center py-16">
+          <div class="text-6xl mb-4">👥</div>
+          <h3 class="text-lg font-semibold text-base-content mb-2">Aucun utilisateur trouvé</h3>
+          <p class="text-base-content/60">La liste des utilisateurs est vide.</p>
+        </div>
+      }
+    </div>
+  }
+
+  <!-- Modal de bannissement -->
+  @if (showBanModal) {
+    <div class="modal modal-open">
+      <div class="modal-box">
+        <form method="dialog">
+          <button class="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+                  (click)="closeBanModal()">✕</button>
+        </form>
+
+        <h3 class="font-bold text-lg mb-4">Bannir l'utilisateur</h3>
+
+        <div class="space-y-4">
+          <div class="alert alert-warning">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+            <span>Vous êtes sur le point de bannir <strong>{{ selectedUser?.username }}</strong></span>
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-semibold">Raison du bannissement</span>
+            </label>
+            <textarea
+              class="textarea textarea-bordered h-24 resize-none"
+              placeholder="Entrez la raison du bannissement..."
+              [(ngModel)]="banReason"
+              required>
+            </textarea>
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-semibold">Durée du bannissement</span>
+            </label>
+            <div class="join">
+              <input
+                type="number"
+                class="input input-bordered join-item flex-1"
+                [(ngModel)]="banDuration"
+                min="1"
+                max="365"
+                required>
+              <span class="btn btn-ghost join-item">jours</span>
+            </div>
+            <label class="label">
+              <span class="label-text-alt">Entre 1 et 365 jours</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-action">
+          <button class="btn btn-ghost" (click)="closeBanModal()">
+            Annuler
+          </button>
+          <button
+            class="btn btn-warning"
+            (click)="banUser()"
+            [disabled]="!banReason.trim()">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
+            </svg>
+            Bannir l'utilisateur
+          </button>
+        </div>
+      </div>
+      <form method="dialog" class="modal-backdrop">
+        <button (click)="closeBanModal()">close</button>
+      </form>
+    </div>
+  }
+</div>

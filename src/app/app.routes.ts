@@ -13,4 +13,9 @@ export const routes: Routes = [
     canActivate: [AuthGuard]
   },
   { path: '', component: LandingPage }
+  {
+    path: 'profile',
+    loadComponent: () => import('./components/user/user').then(m => m.UserComponent),
+    canActivate: [AuthGuard]
+  }
 ];
