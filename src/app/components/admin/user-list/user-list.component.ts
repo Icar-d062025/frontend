@@ -82,7 +82,8 @@ export class UserListComponent implements OnInit {
   }
 
   unbanUser(user: User) {
-    if (confirm(`Êtes-vous sûr de vouloir débannir ${user.username} ?`)) {
+    const displayName = this.getUserDisplayName(user);
+    if (confirm(`Êtes-vous sûr de vouloir débannir ${displayName} ?`)) {
       this.userService.unbanUser(user.id).subscribe({
         next: () => {
           console.log('User unbanned successfully');
@@ -192,5 +193,31 @@ export class UserListComponent implements OnInit {
 
   getFullName(user: User): string {
     return `${user.prenom || ''} ${user.nom || ''}`.trim() || 'N/A';
+  }
+
+  getUserInitial(user: User): string {
+    // Priorité : prenom > nom > email > 'U'
+    if (user.prenom) {
+      return user.prenom.charAt(0).toUpperCase();
+    }
+    if (user.nom) {
+      return user.nom.charAt(0).toUpperCase();
+    }
+    if (user.email) {
+      return user.email.charAt(0).toUpperCase();
+    }
+    return 'U';
+  }
+
+  getUserDisplayName(user: User): string {
+    // Priorité : nom complet > email > ID
+    const fullName = this.getFullName(user);
+    if (fullName !== 'N/A') {
+      return fullName;
+    }
+    if (user.email) {
+      return user.email;
+    }
+    return `Utilisateur #${user.id}`;
   }
 }
