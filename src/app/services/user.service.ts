@@ -11,24 +11,57 @@ export class UserService {
 
   constructor(private http: HttpClient) { }
 
+  private getAuthHeaders(): HttpHeaders {
+    const token = localStorage.getItem('token');
+    return new HttpHeaders({
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : ''
+    });
+  }
+
   getUsers(): Observable<User[]> {
     console.log('Fetching all users...');
-    return this.http.get<User[]>(this.apiUrl, { headers: new HttpHeaders({ 'Content-Type': 'application/json' }) });
+    return this.http.get<User[]>(this.apiUrl, { headers: this.getAuthHeaders() });
   }
 
   getUser(id: number): Observable<User> {
     console.log(`Fetching user with id: ${id}`);
-    return this.http.get<User>(`${this.apiUrl}/${id}`);
+    return this.http.get<User>(`${this.apiUrl}/${id}`, { headers: this.getAuthHeaders() });
   }
 
   banUser(id: number, reason: string, duration: number): Observable<void> {
-    console.log(`Banning user with id: ${id}`);
-    return this.http.post<void>(`${this.apiUrl}/${id}/ban?raison=${reason}&duree=${duration}`, {});
+    console.log(`Banning user with id: ${id} - Admin token included`);
+
+    // Convertir la durée en jours vers un format LocalTime
+    // Par exemple: 7 jours = 7 heures pour le stockage (ou autre logique selon votre besoin)
+    // Ou on peut envoyer directement les jours et laisser le backend convertir
+    const durationTime = this.convertDaysToLocalTime(duration);
+
+    return this.http.post<void>(
+      `${this.apiUrl}/${id}/ban?raison=${reason}&duree=${durationTime}`,
+      {},
+      { headers: this.getAuthHeaders() }
+    );
   }
 
   unbanUser(id: number): Observable<void> {
-    console.log(`Unbanning user with id: ${id}`);
-    // Assuming an endpoint for unbanning exists
-    return this.http.post<void>(`${this.apiUrl}/${id}/unban`, {});
+    console.log(`Unbanning user with id: ${id} - Admin token included`);
+    return this.http.post<void>(
+      `${this.apiUrl}/${id}/unban`,
+      {},
+      { headers: this.getAuthHeaders() }
+    );
+  }
+
+  private convertDaysToLocalTime(days: number): string {
+    // Option 1: Convertir jours en heures (7 jours = 168 heures)
+    // return `${days * 24}:00:00`;
+
+    // Option 2: Utiliser les jours comme heures (plus simple pour l'affichage)
+    // 7 jours = 07:00:00
+    const hours = days.toString().padStart(2, '0');
+    return `${hours}:00:00`;
+
+    // Option 3: Si le backend attend un format différent, ajuster ici
   }
 }
