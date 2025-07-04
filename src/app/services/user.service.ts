@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { User } from '../models/user.model';
 import { switchMap } from 'rxjs/operators';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
@@ -10,7 +11,10 @@ import { switchMap } from 'rxjs/operators';
 export class UserService {
   private apiUrl = 'http://localhost:8080/api/users';
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) { }
 
   private getAuthHeaders(): HttpHeaders {
     const token = localStorage.getItem('token');
@@ -102,8 +106,13 @@ export class UserService {
   updateCurrentUserProfile(profileData: Partial<User>): Observable<User> {
     console.log('Updating current user profile - User token included');
 
+    const userId = this.authService.getUserId();
+    if (!userId) {
+      throw new Error('Utilisateur non connecté');
+    }
+
     return this.http.put<User>(
-      `${this.apiUrl}/profile`, // Endpoint spécifique pour le profil utilisateur
+      `${this.apiUrl}/${userId}`, // Utilise l'endpoint existant avec l'ID utilisateur
       profileData,
       { headers: this.getAuthHeaders() }
     );
@@ -112,8 +121,14 @@ export class UserService {
   // Méthode pour récupérer le profil de l'utilisateur connecté
   getCurrentUserProfile(): Observable<User> {
     console.log('Fetching current user profile');
+
+    const userId = this.authService.getUserId();
+    if (!userId) {
+      throw new Error('Utilisateur non connecté');
+    }
+
     return this.http.get<User>(
-      `${this.apiUrl}/profile`,
+      `${this.apiUrl}/${userId}`, // Utilise l'endpoint existant avec l'ID utilisateur
       { headers: this.getAuthHeaders() }
     );
   }
