@@ -1,0 +1,11 @@
+<div class="card">
+    <img [src]="vehicle.img" [alt]="vehicle.name" />
+    <div class="info">
+        <h3>{{ vehicle.name }}</h3>
+        <p>Places: {{ vehicle.seats }}</p>
+        <p>CO₂: {{ vehicle.co2 }} g/km</p>
+        <p>Immat: {{ vehicle.immat }}</p>
+        <button (click)="toggleFavorite()">★</button>
+        <span [class.active]="vehicle.favorite">Favori</span>
+    </div>
+</div>

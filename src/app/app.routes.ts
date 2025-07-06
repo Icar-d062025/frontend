@@ -1,10 +1,14 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './services/auth.guard';
 import { LandingPage } from './components/landing-page/landing-page';
+import { VehicleSearch } from './components/vehicle-search/vehicle-search';
 
 export const routes: Routes = [
   { path: '',
     component: LandingPage
+  },
+  {
+    path: 'vehicles', component: VehicleSearch
   },
   {
     path: 'auth',

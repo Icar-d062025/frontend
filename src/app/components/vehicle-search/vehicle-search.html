@@ -1,0 +1,9 @@
+<h1>Recherche de véhicule</h1>
+
+<div class="vehicle-list">
+    <app-vehicle-card
+        *ngFor="let vehicle of vehicles(); let i = index"
+        [vehicle]="vehicle"
+        (favoriteToggled)="toggleFavorite(i)">
+    </app-vehicle-card>
+</div>
