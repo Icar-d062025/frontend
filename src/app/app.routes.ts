@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { AuthGuard } from './services/auth.guard';
 import { LandingPage } from './components/landing-page/landing-page';
 import { VehicleSearch } from './components/vehicle-search/vehicle-search';
+import { CarpoolResultsComponent } from './components/carpool-results/carpool-results';
 
 export const routes: Routes = [
   { path: '',
@@ -9,6 +10,9 @@ export const routes: Routes = [
   },
   {
     path: 'vehicles', component: VehicleSearch
+  },
+  {
+    path: 'carpool/results', component: CarpoolResultsComponent
   },
   {
     path: 'auth',

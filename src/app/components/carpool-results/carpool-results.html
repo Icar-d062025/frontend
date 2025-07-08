@@ -1,0 +1,18 @@
+<div class="results-container">
+    <h1>Résultats de votre recherche</h1>
+
+    <div *ngFor="let trip of results" class="result-card">
+        <h3>Conducteur : {{ trip.driver }}</h3>
+        <p><strong>Trajet :</strong> {{ trip.from }} → {{ trip.to }}</p>
+        <div class="details">
+            <div>
+                <p><strong>Départ :</strong> {{ trip.departureDate }} à {{ trip.departureTime }}</p>
+                <p>{{ trip.departureAddress }}</p>
+            </div>
+            <div>
+                <p><strong>Arrivée :</strong> {{ trip.arrivalDate }} à {{ trip.arrivalTime }}</p>
+                <p>{{ trip.arrivalAddress }}</p>
+            </div>
+        </div>
+    </div>
+</div>
