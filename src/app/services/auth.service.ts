@@ -113,4 +113,10 @@ export class AuthService {
     this.roleSubject.next(null);
     this.userIdSubject.next(null);
   }
+
+  isLoggedIn(): boolean {
+    const token = localStorage.getItem('token');
+    // Optionally, add more checks for token validity/expiration here
+    return !!token;
+  }
 }
