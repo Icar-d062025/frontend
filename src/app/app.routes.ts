@@ -1,7 +1,7 @@
-import { Routes } from '@angular/router';
-import { AuthGuard } from './services/auth.guard';
-import { LandingPage } from './components/landing-page/landing-page';
-import { VehicleSearch } from './components/vehicle-search/vehicle-search';
+import {Routes} from '@angular/router';
+import {AuthGuard} from './services/auth.guard';
+import {LandingPage} from './components/landing-page/landing-page';
+import {VehicleSearch} from './components/vehicle-search/vehicle-search';
 
 export const routes: Routes = [
   { path: '',
@@ -17,7 +17,8 @@ export const routes: Routes = [
   {
     path: 'admin',
     loadComponent: () => import('./components/admin/admin').then(m => m.Admin),
-    canActivate: [AuthGuard]
+    canActivate: [AuthGuard],
+    data: {role: 'admin'}
   },
   {
     path: 'profile',
