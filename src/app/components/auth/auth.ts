@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../services/auth.service';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-auth',
@@ -12,6 +13,7 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './auth.css'
 })
 export class Auth implements OnInit {
+  private apiUrl = environment.apiUrl;
   isLogin = true;
   loading = false;
   errorMsg = '';
@@ -89,7 +91,7 @@ export class Auth implements OnInit {
       password: this.loginData.password.trim()
     };
 
-    this.http.post('http://localhost:8080/api/auth/login', cleanLoginData, { responseType: 'text' }).subscribe({
+    this.http.post(`${this.apiUrl}/auth/login`, cleanLoginData, { responseType: 'text' }).subscribe({
       next: (res) => {
         if (res.startsWith('ey')) { // crude JWT check
           this.successMsg = 'Login successful!';
@@ -102,9 +104,8 @@ export class Auth implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        console.error('Login error:', err);
-        this.errorMsg = err.error?.message || 'Erreur de connexion. Vérifiez vos identifiants.';
         this.loading = false;
+        this.errorMsg = err.error?.message || 'An error occurred during login';
       }
     });
   }
@@ -129,28 +130,22 @@ export class Auth implements OnInit {
       password: this.registerData.password.trim()
     };
 
-    this.http.post('http://localhost:8080/api/auth/register', cleanRegisterData, { responseType: 'text' }).subscribe({
+    this.http.post(`${this.apiUrl}/auth/register`, cleanRegisterData, { responseType: 'text' }).subscribe({
       next: (res) => {
-        if (res === 'Registration successful') {
-          this.successMsg = res;
-          this.authService.setUsername(cleanRegisterData.username);
-          this.router.navigate(['/']);
-        } else {
-          this.errorMsg = res;
-        }
         this.loading = false;
+        this.successMsg = res;
+        this.isLogin = true; // Switch to login form after successful registration
       },
       error: (err) => {
-        console.error('Registration error:', err);
-        this.errorMsg = err.error?.message || 'Erreur d\'inscription. Veuillez réessayer.';
         this.loading = false;
+        this.errorMsg = err.error?.message || 'An error occurred during registration';
       }
     });
   }
 
   ngOnInit() {
-    // Redirige si déjà connecté
-    if (localStorage.getItem('token') || localStorage.getItem('username')) {
+    // Rediriger si déjà connecté
+    if (this.authService.isLoggedIn()) {
       this.router.navigate(['/']);
     }
   }
