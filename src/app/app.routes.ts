@@ -8,7 +8,7 @@ export const routes: Routes = [
     component: LandingPage
   },
   {
-    path: 'vehicles', component: VehicleSearch
+    path: 'vehicules', component: VehicleSearch
   },
   {
     path: 'auth',
