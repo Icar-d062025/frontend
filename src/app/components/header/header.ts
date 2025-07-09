@@ -1,8 +1,8 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
-import { Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
-import { Subscription } from 'rxjs';
-import { CommonModule } from '@angular/common';
+import {Component, OnDestroy, OnInit} from '@angular/core';
+import {Router} from '@angular/router';
+import {AuthService} from '../../services/auth.service';
+import {Subscription} from 'rxjs';
+import {CommonModule} from '@angular/common';
 
 @Component({
   selector: 'app-header',
@@ -43,6 +43,10 @@ export class Header implements OnInit, OnDestroy {
 
   goToAdmin() {
     this.router.navigate(['/admin']);
+  }
+
+  goToVehicules() {
+    this.router.navigate(['/vehicules']);
   }
 
   logout() {

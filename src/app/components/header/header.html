@@ -36,6 +36,17 @@
               </a>
             </li>
 
+            <!-- Lien Véhicules -->
+            <li>
+              <a (click)="goToVehicules()" class="flex items-center gap-2 cursor-pointer hover:bg-base-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M3 13l2-2m0 0l7-7 7 7M5 11v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0h6"></path>
+                </svg>
+                Véhicules
+              </a>
+            </li>
+
             <!-- Admin Link (only for admins) - EN DESSOUS de Mon Profil -->
             @if (role === 'ADMIN' || role === 'admin') {
               <li>
